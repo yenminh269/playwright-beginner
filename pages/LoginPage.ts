@@ -7,6 +7,7 @@ export class LoginPage {
   readonly checkBoxOne : Locator;
   readonly checkBoxTwo: Locator;
   readonly errorMessage : Locator;
+  readonly headingText : Locator;
 
   constructor(private readonly page : Page){
     this.email = page.getByPlaceholder('Username');
@@ -15,6 +16,7 @@ export class LoginPage {
     this.checkBoxOne = page.locator('#chkboxOne');
     this.checkBoxTwo = page.locator('#chkboxTwo');
     this.errorMessage = page.getByText('* Incorrect username or password');
+    this.headingText = page.getByRole('heading', { name: 'Sign in' });
   }
 
   async goto(url : string) : Promise<void> {

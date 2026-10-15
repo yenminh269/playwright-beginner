@@ -8,6 +8,8 @@ test.describe('Log In functionality', () => {
     let url = testInfo.project.use.baseURL;
 
     loginPage.goto(`${url}`);
+
+    await expect(loginPage.headingText).toBeVisible(timeout);
   });
 
   test('Logged in successfully', async ({loginPage, dashboardPage}) => {
