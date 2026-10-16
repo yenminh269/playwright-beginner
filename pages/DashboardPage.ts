@@ -1,5 +1,4 @@
 import {Page} from '@playwright/test';
-
 export class DashboardPage {
   readonly logoutButton;
   readonly successMessage;
@@ -10,7 +9,7 @@ export class DashboardPage {
   }
 
   async logout() : Promise<void> {
-    this.logoutButton.click();
+    await this.logoutButton.click();
   }
 }
 

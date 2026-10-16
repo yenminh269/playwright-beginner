@@ -1,45 +1,51 @@
-import { Page, Locator, expect} from '@playwright/test';
-
+import { Page, Locator} from '@playwright/test';
 export class TodoPage {
-  readonly inputTask : Locator;
+  readonly taskInput : Locator;
   readonly submitButton : Locator;
-  readonly uncompleteTask : Locator;
+  readonly uncompletedTask : Locator;
   readonly completedTasksList: Locator;
   readonly completedTask : Locator;
-  readonly heading : Locator;
-  readonly timeout = {timeout: 30_000};
+  readonly pageHeading : Locator;
+  readonly completedParentTag : Locator;
+  readonly taskText : Locator;
 
   constructor(private readonly page : Page){
-    this.heading = page.getByText('📋 My tasks');
-    this.inputTask = page.locator('#new-task');
+    this.pageHeading = page.getByText('📋 My tasks');
+    this.completedParentTag = page.locator('li.completed');
+    this.taskInput = page.locator('#new-task');
     this.submitButton = page.getByRole('button');
-    this.uncompleteTask = page.locator('label[title="Complete task"]');
+    this.uncompletedTask = page.locator('label[title="Complete task"]');
     this.completedTasksList = page.locator('.completed');
     this.completedTask = page.locator('label[title="Reopen task"]');
-  }
-
-  async goto(url : string) : Promise<void> {
-    await this.page.goto(`${url}`);
+    this.taskText = page.locator('span.text');
   }
 
   async addTask(task : string) : Promise<void> {
-    this.inputTask.fill(task);
+    await this.taskInput.fill(task);
 
-    this.submitButton.click();
+    await this.submitButton.click();
+
+    console.log("Task is added");
   }
 
   async markTaskCompleted(task : string) : Promise<void> {
-    this.addTask(task);
+    await this.uncompletedTask.filter({ hasText: task }).click();
 
-    this.uncompleteTask.filter({ hasText: task }).click();
+    console.log("Task is marked completed");
   }
 
   async deleteTask(task : string) : Promise<void> {
-    const row = this.page.locator('li.task.completed').filter({
-      has : this.page.locator('span.text', { hasText: task}),
+    //get the row of task
+    const row = this.completedParentTag.filter({
+      has : this.completedTask.filter({
+        hasText: task,
+      })
     });
 
-    await row.locator('button.delete').click();
+    const deleteButton = row.locator('button.delete');
+    
+    await deleteButton.click();
+    
+    console.log("Task is deleted");
   }
-  
 }

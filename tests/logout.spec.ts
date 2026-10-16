@@ -1,26 +1,22 @@
 import { test, expect } from '../fixtures/pages'
+import { goto } from '../utils/helper';
 
 test.describe('Log out' , () => {
   const email = "abc@gmail.com";
   const password = "rahulshettyacademy";
-  const timeout = {timeout: 30_000};
 
-  test.beforeEach(async ({ loginPage, dashboardPage }, testInfo ) => {
+  test.beforeEach(async ({ loginPage, page }, testInfo ) => {
     let url = testInfo.project.use.baseURL;
 
-    loginPage.goto(`${url}`);
-    
-    await expect(loginPage.headingText).toBeVisible(timeout);
+    await goto(page, `${url}`);
 
-    loginPage.logIn(email, password);
-    
-    await expect(dashboardPage.successMessage).toBeVisible(timeout);
+    await loginPage.logIn(email, password);
   });
   
   test('Logged out successfully', async ({loginPage, dashboardPage}) => {
-    dashboardPage.logout();
+    await dashboardPage.logout();
 
-    await expect(loginPage.loginButton).toBeVisible(timeout);
+    await expect(loginPage.loginButton).toBeVisible();
   })
 })
 

@@ -1,32 +1,30 @@
 import { test, expect } from '../fixtures/pages';
+import { goto } from '../utils/helper';
 
 test.describe('Log In functionality', () => {
   const email = "abc@gmail.com";
-  const timeout = {timeout: 30_000};
 
-  test.beforeEach(async ({ loginPage}, testInfo ) => {
+  test.beforeEach(async ({ page}, testInfo ) => {
     let url = testInfo.project.use.baseURL;
 
-    loginPage.goto(`${url}`);
-
-    await expect(loginPage.headingText).toBeVisible(timeout);
+    await goto(page, `${url}`);
   });
 
   test('Logged in successfully', async ({loginPage, dashboardPage}) => {
-    loginPage.logIn(email, "rahulshettyacademy");
+    await loginPage.logIn(email, "rahulshettyacademy");
 
-    await expect(dashboardPage.successMessage).toBeVisible(timeout);
+    await expect(dashboardPage.successMessage).toBeVisible();
   })
 
   test('Incorrect password', async ({loginPage}) => {
-    loginPage.logIn(email, "rahul");
+    await loginPage.logIn(email, "rahul");
 
-    await expect(loginPage.errorMessage).toBeVisible(timeout);
+    await expect(loginPage.errorMessage).toBeVisible();
   })
 
   test('Empty input', async ({loginPage}) => {
-    loginPage.logIn("", "");
+    await loginPage.logIn("", "");
 
-    await expect(loginPage.errorMessage).toBeVisible(timeout);
+    await expect(loginPage.errorMessage).toBeVisible();
   })
 })

@@ -1,38 +1,41 @@
-import {test, expect, Locator } from '@playwright/test'
-import { TodoPage } from '../pages/TodoPage'
+import {test, expect } from "../fixtures/pages"
+import { goto } from "../utils/helper";
 
-test.describe("Todo page", () => {
-  let todoPage : TodoPage;
+test.describe("Todo list", () => {
   const task = "Drink water";
-  const timeout = {timeout: 30_000};
 
-  test.beforeEach(async({page}) => {
-    todoPage = new TodoPage(page);
-
-    todoPage.goto("https://microsoftedge.github.io/Demos/demo-to-do/");
-  })
-
-  test('Add new task', async() => {
-    todoPage.addTask(task);
-
-    await expect (todoPage.uncompleteTask.filter({ 
-      hasText: task 
-    })).toBeVisible(timeout);
-  })
-
-  test('Mark task done', async () => {
-    todoPage.markTaskCompleted(task);
-
-    await expect(todoPage.completedTask.filter({
-      hasText: task,
-    })).toBeVisible(timeout);
-  })
-
-  test('Delete task', async (page) => {
-    todoPage.addTask(task);
+  test.beforeEach(async({ page }, testInfo) => {
+    let url = testInfo.project.use.baseURL;
     
-    todoPage.markTaskCompleted(task);
+    await goto(page, `${url}`);
+  })
 
-    todoPage.deleteTask(task);
+  test('Add new task', async({ todoPage }) => {
+    await todoPage.addTask(task);
+
+    await expect(todoPage.uncompletedTask
+      .filter({ hasText: task }))
+      .toBeVisible();
+  })
+
+  test('Mark task done', async ({ todoPage }) => {
+    await todoPage.addTask(task);
+
+    await todoPage.markTaskCompleted(task);
+
+    await expect(todoPage.completedTask
+      .filter({ hasText: task, }))
+      .toBeVisible();
+  })
+
+  test('Delete task', async ({ todoPage }) => {
+    await todoPage.addTask(task);
+    await todoPage.markTaskCompleted(task);
+
+    await todoPage.deleteTask(task);
+
+    await expect(todoPage.taskText
+      .filter({ hasText: task}))
+      .toHaveCount(0);
   })
 })
